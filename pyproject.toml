@@ -1,116 +1,124 @@
-[tool.poetry]
+[project]
 name = "sumsmaster"
-version = "0.1.1"
-description = "Core"
-authors = ["Matthew Martin <matthewdeanmartin@gmail.com>"]
-keywords = []
+version = "0.1.0"
+description = "A Python project with quality gates"
+readme = "README.md"
+authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
+keywords = ["sumsmaster"]
+license = "MIT"
+requires-python = ">=3.10"
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/matthewdeanmartin/sumsmaster"
+Documentation = "https://sumsmaster.readthedocs.io/en/latest/"
+Changelog = "https://github.com/matthewdeanmartin/sumsmaster/blob/main/CHANGELOG.md"
+homepage = "https://github.com/matthewdeanmartin/sumsmaster"
+issues = "https://github.com/matthewdeanmartin/sumsmaster/issues/"
+
+[project.scripts]
+sumsmaster = "sumsmaster.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sumsmaster"]
 include = [
     "sumsmaster/**/*.py",
-    "sumsmaster/**/*.md",
-    "sumsmaster/**/*.txt",
-    "sumsmaster/**/*.html",
-    "sumsmaster/**/*.jinja",
     "sumsmaster/py.typed",
+    "/README.md",
+    "LICENSE",
 ]
-exclude = [
+
+[tool.hatch.build.targets.sdist]
+include = ["/README.md", "LICENSE", "/sumsmaster", "/tests"]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.9.4",
+    "black>=26.0.0",
+    "isort>=6.0.0",
+    "jiggle-version>=2.1.0",
+    "codespell>=2.4.1",
+    "mdformat>=1.0.0",
+    "metametameta>=0.1.5",
+    "mypy>=1.18.0",
+    "pylint[spelling]>=4.0.0",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=3.5.0",
+    "pytest-randomly>=3.15.0",
+    "pytest-sugar>=0.9.7",
+    "pytest-mock>=3.14.0",
+    "pytest-timeout>=2.4.0",
+    "hypothesis>=6.100.0",
+    "ruff>=0.12.0",
+    "troml-dev-status>=0.6.0",
+    "pre-commit>=4.0.0",
+    "pip-audit>=2.7.0",
+    "tox>=4.0",
+    "tox-uv>=1.0",
+    "gha-update>=0.1.0; python_version >= '3.12'",
+    "pyyaml>=6.0",
+    "yamlfix>=1.19.0",
+    "interrogate>=1.5.0",
+    "linkcheckmd>=1.4.0",
+    "pyenchant>=3.2.2",
+    "mkdocs>=1.6.0",
+    "mkdocstrings[python]>=0.26.0",
+    "git2md>=0.1.0",
+    "pyclean>=3.0.0",
+    # dead code analysis (advisory)
+    "vulture>=2.11",
+    "deadcode>=2.4.0",
+    # API surface / doc checks
+    "griffe>=1.0.0",
+    "pydoclint>=0.8.0; python_version >= '3.10'",
+    "pydoctest==0.2.1",
+    # advisory / exploratory tools (standalone make targets, not quality gates)
+    "refurb>=2.0.0; python_version >= '3.10'",
+    "crosshair-tool>=0.0.80; python_version >= '3.10'",
+    "deptry>=0.20.0",
+    "import-linter>=2.0",
 ]
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/matthewdeanmartin/sumsmaster"
-homepage = "https://github.com/matthewdeanmartin/sumsmaster"
-documentation = "https://matthewdeanmartin.github.io/sumsmaster/sumsmaster/index.html"
 
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/matthewdeanmartin/sumsmaster/issues"
-"Change Log" = "https://github.com/matthewdeanmartin/sumsmaster/blob/main/CHANGELOG.md"
+[tool.uv]
+default-groups = ["dev"]
 
-[tool.poetry.scripts]
-sumsmaster = 'sumsmaster.__main__:main'
-mmm = 'sumsmaster.__main__:main'
-
-[tool.poetry.dependencies]
-python = ">=3.13,<4.0"
-
-# packaging = ">=23.2"
-
-# Config
-toml = ">=0.10.2"
-colorlog = ">=6.8.2"
-# metadata, don't need it!
-# importlib-metadata = { version = ">=7.0.1", python = "<3.8" }
-
-
-[tool.poetry.dev-dependencies]
-# formatting
-black = ">=23.11.0"
-
-# dep tools
-deptry = "*"
-
-# testing tools
-pytest = ">=7.4.3"
-pytest-cov = ">=4.1.0"
-pytest-xdist =">=3.5.0"
-pytest-randomly=">=3.15.0"
-pytest-sugar =">=0.9.7"
-pytest-mock = "*"
-pytest-unused-fixtures = "*"
-hypothesis = ">=6.96.0"
-tox = "*"
-
-# tools
-pylint = ">=3.0.2"
-ruff = ">=0.1.9"
-pre-commit = ">=3.5.0"
-
-# types
-mypy = ">=1.8.0"
-types-toml = "*"
-
-
-# more testing
-# pytest-snapshot = ">=0.9.0"
-# pytest-asyncio = ">=0.23.2"
-#anyio = ">=4.2.0"
-#trio = ">=0.23.2"
-
-
-# docs
-keepachangelog-manager = ">=3.3.1"
-interrogate = ">=1.5.0"
-pydoctest = ">=0.1.22"
-pdoc3 = ">=0.10.0"
-mdformat = ">=0.7.17"
-linkcheckmd = ">=1.4.0"
-codespell = ">=2.2.6"
-pyenchant = ">=3.2.2"
-#
-# contract
-# griffe = ">=0.38.1"
-
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+addopts = "-q --timeout=60"
+norecursedirs = ["vendor", "scripts", "dist", "build"]
+markers = [
+    "slow: performance benchmarks (run with -m slow)",
+    "integration: integration tests (run with -m integration)",
+]
+junit_family = "xunit1"
 
 [tool.black]
 line-length = 120
-target-version = ['py39']
+target-version = ["py310"]
 include = '\.pyi?$'
 exclude = '''
-
 (
   /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
+      \.eggs
+    | \.git
     | \.hg
     | \.mypy_cache
     | \.tox
@@ -120,135 +128,74 @@ exclude = '''
     | build
     | dist
   )/
-  | foo.py           # also separately exclude a file named foo.py in
-                     # the root of the project
 )
 '''
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-testpaths = [
-    "test",
-    "tests"
-]
-junit_family = "xunit1"
-norecursedirs = ["vendor", "scripts"]
-# don't know how to do this in toml
-#addopts = "--strict-markers"
-#markers =
-#	slow: marks tests as slow (deselect with '-m "not slow"')
-#	fast: marks tests as fast (deselect with '-m "not fast"')
 
 [tool.isort]
-default_section = "THIRDPARTY"
-force_grid_wrap = 0
-include_trailing_comma = true
-known_first_party = ["dedlin"]
+profile = "black"
 line_length = 120
-multi_line_output = 3
-use_parentheses = true
+py_version = 310
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+packages = ["sumsmaster", "tests"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_untyped_calls = false
 
 [tool.ruff]
-line-length = 320
+line-length = 120
+target-version = "py310"
 
-# Enable Pyflakes `E` and `F` codes by default.
-select = ["E", "F",
-    "D", # docs
-    "UP", # pyupgrade
-    "B", # bugbear
+[tool.ruff.lint]
+select = [
+    "B",   # bugbear
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "UP",  # pyupgrade
+    "SIM", # simplify
+    "RUF", # ruff-specific
+    "W",   # pycodestyle warnings
 ]
 ignore = [
-    "D301", # messes with doctests
-    "E722",
-    # only track structural problems with docstrings, not whitespace, nor missing
-    "D200", "D212", "D415", "D411", "D205", "D102", "D103", "D100", "D107", "D101", "D104", "D105",
-    "UP007", "UP038", # Not sure if | is well supported in lowever versions of python
+    "E501",   # line too long (black handles this)
+    "UP007",  # keep typing syntax conservative unless the package starts using 3.10-only forms
 ]
 
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    "dead_code",
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-per-file-ignores = { }
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Assume Python 3.10.
-target-version = "py311"
-
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["B011", "S101"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.scriv]
-version = "literal: pyproject.toml: tool.poetry.version"
-format = "md"
-main_branches = "master, main, develop, dev"
-
-[mypy]
-warn_return_any = true
-warn_unused_configs = true
-strict = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-strict_optional = true
-warn_redundant_casts = true
-warn_no_return = true
-
-mypy_path = [".", "$MYPY_CONFIG_FILE_DIR/typings", "typings"]
-files = ["sumsmaster", "typings"]
-
-[mypy.pygount]
-ignore_missing_imports = true
-
-[mypy.astor]
-ignore_missing_imports = true
-
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
 
 [tool.coverage.report]
-# Regexes for lines to exclude from consideration
 exclude_also = [
-    # Don't complain about missing debug-only code:
     "def __repr__",
     "if self\\.debug",
-    # Don't complain if tests don't hit defensive assertion code:
     "raise AssertionError",
     "raise NotImplementedError",
-    # Don't complain if non-runnable code isn't run:
+    "except ImportError",
+    "except ModuleNotFoundError",
     "if 0:",
     "if __name__ == .__main__.:",
-    # Don't complain about abstract methods, they aren't run:
     "@(abc\\.)?abstractmethod",
 ]
 
-#[tool.cli-tools]
-#make = {name = "make", version = ">=3.81", schema = "semver", tags = ["build"]}
-#python = {name = "python", version = ">=3.11.1", schema = "semver", tags = ["build"]}
-
-[tool.strict-build-script]
-minimum_test_coverage = 60
+# import-linter: define architectural contracts here when you're ready.
+# Run `make import-linter` to check them.
+# See: https://import-linter.readthedocs.io/
+[tool.importlinter]
+root_packages = ["sumsmaster"]
+# [[tool.importlinter.contracts]]
+# name = "sumsmaster does not import from tests"
+# type = "forbidden"
+# source_modules = ["sumsmaster"]
+# forbidden_modules = ["tests"]
