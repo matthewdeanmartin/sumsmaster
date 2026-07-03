@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tkinter GUI (`sumsmaster gui` / `sumsmaster-gui`) for the free self-hosted
+  edition: local unauthenticated profiles with plan selection, trick-weighted
+  practice sessions with per-trick progress and mastery tracking,
+  pause/resume, a trick browser, and the coverage report.
+
 ## [0.1.0] - 2026-04-26
 
 ### Added

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renard Tables: Mental Multiplication Without Interpolation</title>
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --accent: #16537e;
+    --soft: #f0f4f8;
+    --good: #1a7a4a;
+    --warn: #a05a00;
+    --rule: #d4dce4;
+  }
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--ink);
+    max-width: 46rem;
+    margin: 2rem auto;
+    padding: 0 1.2rem;
+    line-height: 1.55;
+  }
+  h1, h2, h3 { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: var(--accent); }
+  h1 { font-size: 1.7rem; line-height: 1.25; }
+  h2 { margin-top: 2.2rem; border-bottom: 2px solid var(--rule); padding-bottom: .25rem; }
+  code, .mono { font-family: Consolas, "Cascadia Mono", monospace; }
+  table { border-collapse: collapse; margin: 1rem 0; font-size: .95rem; }
+  th, td { border: 1px solid var(--rule); padding: .3rem .65rem; text-align: center; }
+  th { background: var(--soft); font-family: "Segoe UI", sans-serif; }
+  .example {
+    background: var(--soft);
+    border-left: 4px solid var(--accent);
+    padding: .8rem 1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .example .title { font-family: "Segoe UI", sans-serif; font-weight: 600; color: var(--accent); }
+  .steps { font-family: Consolas, "Cascadia Mono", monospace; font-size: .92rem; white-space: pre; overflow-x: auto; margin: .5rem 0 0; }
+  .verdict-good { color: var(--good); font-weight: 600; }
+  .verdict-warn { color: var(--warn); font-weight: 600; }
+  .aside {
+    border: 1px solid var(--rule); border-radius: 6px;
+    padding: .7rem 1rem; margin: 1.2rem 0; font-size: .93rem;
+    background: #fbfcfd;
+  }
+  .seed { background: #fff3c4; }
+  @media print { body { margin: 0 auto; } .example { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<h1>Renard Tables: Mental Multiplication Without Interpolation</h1>
+
+<p>Old mental-arithmetic books teach a beautiful trick: memorize a small
+table of base-10 logarithms, and you can multiply, divide, and take powers
+and roots of any numbers in your head, to within a few percent. The catch
+is that the classic version requires <em>interpolating</em> between table
+entries — a fiddly mental division most people won't do. This page explains
+a table that needs <strong>no interpolation at all</strong>: the Renard
+series, also called <em>preferred numbers</em>.</p>
+
+<h2>The log method in 20 seconds</h2>
+
+<p>Logarithms turn multiplication into addition: log(a·b) = log a + log b.
+So to multiply two numbers:</p>
+
+<ol>
+  <li>look up the log of each number,</li>
+  <li>add the logs (easy),</li>
+  <li>look up which number has that log (the &ldquo;antilog&rdquo;).</li>
+</ol>
+
+<p>Division is the same with subtraction. Square roots: halve the log.
+Powers: multiply the log. One table, four-plus operations. Powers of ten
+ride along for free: log 4870 = log 4.87 + 3, so you only ever need logs of
+numbers between 1 and 10.</p>
+
+<h2>The problem with the classic table</h2>
+
+<p>The book table stores log 1 through log 10
+(log 2 ≈ 0.30, log 3 ≈ 0.48, …). But what is log 4.87? It's between
+log 4 = 0.60 and log 5 = 0.70, about 87% of the way — you must interpolate.
+Skip that step and just snap 4.87 to its nearest neighbor, and accuracy
+collapses: in simulation, the median multiplication error jumps from
+2.6% to <strong>14%</strong> — worse than doing no log trick at all.
+The gaps between entries are widest, in log terms, exactly where most
+real-world numbers live (1.0&ndash;2.0).</p>
+
+<h2>Renard's idea: space the table evenly in <em>log</em></h2>
+
+<p>In 1877, French military engineer Colonel Charles Renard was asked to
+rationalize the sizes of balloon mooring cables. He cut 425 sizes down to 17
+by making each size a constant <em>ratio</em> larger than the last — evenly
+spaced in log space. The scheme became ISO 3, the &ldquo;preferred
+numbers&rdquo; used today for resistor values, decibels, camera stops, and
+1&ndash;2&ndash;5 currency denominations.</p>
+
+<p>The 10-step series, <strong>R10</strong>, picks the round-looking number
+closest to each power 10<sup>k/10</sup>:</p>
+
+<table>
+  <tr><th>log (memorized: count by 0.1)</th>
+      <td>0.0</td><td>0.1</td><td>0.2</td><td>0.3</td><td>0.4</td>
+      <td>0.5</td><td>0.6</td><td>0.7</td><td>0.8</td><td>0.9</td><td>1.0</td></tr>
+  <tr><th>number (memorized)</th>
+      <td>1</td><td>1.25</td><td>1.6</td><td>2</td><td>2.5</td>
+      <td>3.15</td><td>4</td><td>5</td><td>6.3</td><td>8</td><td>10</td></tr>
+  <tr><th>true 10<sup>k/10</sup></th>
+      <td>1</td><td>1.259</td><td>1.585</td><td>1.995</td><td>2.512</td>
+      <td>3.162</td><td>3.981</td><td>5.012</td><td>6.310</td><td>7.943</td><td>10</td></tr>
+</table>
+
+<p>Notice what happened to the memorization burden. The <em>logs</em> are
+now just &ldquo;count by 0.1&rdquo; — a rule, not facts. All you memorize
+is the number row, and most of it is structural too (see the doubling rule
+below). Total: about <strong>7 digits</strong> of genuine memorization,
+versus 16 for the classic table.</p>
+
+<p>And because the entries are evenly spaced in log, <strong>snapping to
+the nearest entry is all you ever do</strong> — every snap costs at most
+half a step (±0.05 in log, about ±12%), no matter where the number falls.</p>
+
+<h2>Worked examples (R10, no interpolation)</h2>
+
+<div class="example">
+  <span class="title">Multiply: 1.6 × 2.5</span>
+  <div class="steps">
+1.6 → 0.2      2.5 → 0.4
+0.2 + 0.4 = 0.6 → 4</div>
+  <p class="verdict-good">Answer: 4. True value: 4.0 — exact.</p>
+</div>
+
+<div class="example">
+  <span class="title">Multiply: 487 × 2,310</span>
+  <div class="steps">
+487   = 4.87 × 10²   4.87 snaps to 5   → 0.7 + 2 = 2.7
+2,310 = 2.31 × 10³   2.31 snaps to 2.5 → 0.4 + 3 = 3.4
+2.7 + 3.4 = 6.1  →  fractional part 0.1 → 1.25
+answer ≈ 1.25 × 10⁶</div>
+  <p class="verdict-warn">True value: 1,124,970 — estimate is 11% high.
+  R10 is a rough tool; the R20 version below fixes this.</p>
+</div>
+
+<div class="example">
+  <span class="title">Divide: 6,400 ÷ 18</span>
+  <div class="steps">
+6,400 = 6.4 × 10³   6.4 snaps to 6.3 → 0.8 + 3 = 3.8
+18    = 1.8 × 10¹   1.8 → between 1.6 (0.2) and 2 (0.3) → call it 0.25 + 1
+3.8 − 1.25 = 2.55  →  0.55 is between 0.5 (3.15) and 0.6 (4) → ≈ 3.55
+answer ≈ 355</div>
+  <p class="verdict-good">True value: 355.6 — within 0.2%. (With R20 the
+  in-between values 0.25 → 1.8 and 0.55 → 3.55 are actual table entries,
+  no judgment needed.)</p>
+</div>
+
+<div class="example">
+  <span class="title">Square root: √5000</span>
+  <div class="steps">
+5,000 = 5 × 10³  →  log ≈ 0.7 + 3 = 3.7
+halve: 3.7 ÷ 2 = 1.85  →  fractional 0.85, between 6.3 (0.8) and 8 (0.9) → ≈ 7.1
+answer ≈ 7.1 × 10¹ = 71</div>
+  <p class="verdict-good">True value: 70.71 — within 0.5%. Try doing that
+  by rounding-and-multiplying.</p>
+</div>
+
+<div class="example">
+  <span class="title">Power: 2¹⁰</span>
+  <div class="steps">
+log 2 = 0.3   ×10 → 3.0  →  10³
+answer ≈ 1,000</div>
+  <p class="verdict-good">True value: 1,024 — 2.3% low. (This is why
+  log 2 ≈ 0.3 in the first place: 2¹⁰ ≈ 10³.)</p>
+  <p class="verdict-warn">Caution: powers multiply the table's stored
+  error by the exponent. 1.4¹⁰ via the table gives 0.15 × 10 = 1.5 → 31.5,
+  but the truth is 28.9 (9% off) because log 1.4 = 0.146, not 0.15.</p>
+</div>
+
+<h2>The R20 upgrade: half-steps</h2>
+
+<p>Twenty steps per decade (each step 0.05 in log) doubles the precision.
+Highlighted cells are the only new &ldquo;seeds&rdquo; you memorize — the
+rest of the row is the R10 table or generated by the doubling rule.</p>
+
+<table>
+  <tr><th>log</th>
+      <td>0.00</td><td class="seed">0.05</td><td>0.10</td><td class="seed">0.15</td>
+      <td>0.20</td><td class="seed">0.25</td><td>0.30</td><td>0.35</td>
+      <td>0.40</td><td>0.45</td><td>0.50</td></tr>
+  <tr><th>number</th>
+      <td>1</td><td class="seed">1.12</td><td>1.25</td><td class="seed">1.4</td>
+      <td>1.6</td><td class="seed">1.8</td><td>2</td><td>2.24</td>
+      <td>2.5</td><td>2.8</td><td>3.15</td></tr>
+  <tr><th>log</th>
+      <td>0.55</td><td>0.60</td><td>0.65</td><td>0.70</td><td>0.75</td>
+      <td>0.80</td><td>0.85</td><td>0.90</td><td>0.95</td><td>1.00</td><td></td></tr>
+  <tr><th>number</th>
+      <td>3.55</td><td>4</td><td>4.5</td><td>5</td><td>5.6</td>
+      <td>6.3</td><td>7.1</td><td>8</td><td>9</td><td>10</td><td></td></tr>
+</table>
+
+<p>Redo the multiplication that R10 fumbled:</p>
+
+<div class="example">
+  <span class="title">Multiply: 487 × 2,310 (R20)</span>
+  <div class="steps">
+4.87 snaps to 5    → 0.70 + 2
+2.31 snaps to 2.24 → 0.35 + 3
+2.70 + 3.35 = 6.05  →  0.05 → 1.12
+answer ≈ 1.12 × 10⁶</div>
+  <p class="verdict-good">True value: 1,124,970 — within 0.4%.</p>
+</div>
+
+<h2>How to memorize it: the doubling rule</h2>
+
+<p>Because ×2 is +0.30 in log, <strong>doubling a number moves it exactly
+3 slots along R10</strong> (6 slots along R20):</p>
+
+<p class="mono" style="text-align:center">
+1 → 2 → 4 → 8 &nbsp;&nbsp;|&nbsp;&nbsp;
+1.25 → 2.5 → 5 → 10 &nbsp;&nbsp;|&nbsp;&nbsp;
+1.6 → 3.15 → 6.3
+</p>
+
+<p>So R10 is generated by doubling three seeds: <strong>1, 1.25,
+1.6</strong>. R20 adds three more: <strong>1.12, 1.4, 1.8</strong> (giving
+2.24, 2.8, 3.55, 4.5, 5.6, 7.1, 9 by doubling). Six small numbers and one
+rule reconstruct the whole table.</p>
+
+<div class="aside">
+<strong>You may already know this table.</strong> Each R10 step is exactly
+1 decibel of power ratio — &ldquo;3 dB = double&rdquo; is the doubling
+rule. The entry at 0.5 is √10 ≈ 3.16. Resistor E-series, camera f-stops,
+and 1&ndash;2&ndash;5 coin denominations are all Renard-flavored. Engineers
+who &ldquo;think in dB&rdquo; are running this exact algorithm.
+</div>
+
+<h2>How accurate is it really?</h2>
+
+<p>Monte Carlo simulation, 20,000 random multiplications
+(<code>scripts/poc_log_table.py</code>):</p>
+
+<table>
+  <tr><th>Method</th><th>Digits memorized</th><th>Median error</th><th>90th percentile</th></tr>
+  <tr><td>classic log table, <em>no</em> interpolation</td><td>16</td><td>14%</td><td>34%</td></tr>
+  <tr><td>round to 1 sig fig &amp; multiply</td><td>0</td><td>11%</td><td>29%</td></tr>
+  <tr><td><strong>R10, no interpolation</strong></td><td><strong>7</strong></td><td><strong>6.7%</strong></td><td><strong>16%</strong></td></tr>
+  <tr><td>classic log table, with interpolation</td><td>16</td><td>2.6%</td><td>6.3%</td></tr>
+  <tr><td><strong>R20, no interpolation</strong></td><td><strong>19</strong></td><td><strong>3.4%</strong></td><td><strong>8.0%</strong></td></tr>
+  <tr><td>round to 2 sig figs &amp; multiply</td><td>0</td><td>1.1%</td><td>3.2%</td></tr>
+  <tr><td>R20, with interpolation</td><td>19</td><td>0.9%</td><td>2.2%</td></tr>
+</table>
+
+<p>Reading the table: snapping on R20 roughly matches the classic
+interpolated method while skipping its hardest mental step, and beats it
+per memorized digit. If you later learn to interpolate (&ldquo;2.31 is a
+third of the way from 2.24 to 2.5&rdquo;), the same R20 table becomes the
+best small table tested. And unlike round-and-multiply, every row of this
+table also does division, roots, and powers.</p>
+
+<h2>When <em>not</em> to use it</h2>
+
+<ul>
+  <li><strong>Numbers near 1</strong> (1.05¹⁵ compound interest): the table
+  can't resolve them; use ln(1+x) ≈ x &mdash; i.e. log(1+x) ≈ 0.43·x.</li>
+  <li><strong>When you need an exact answer</strong> — this is an
+  estimation tool; pair it with a last-digit or casting-out-nines check if
+  exactness matters.</li>
+  <li><strong>Addition and subtraction</strong> — logs don't help; just
+  round and add.</li>
+</ul>
+
+<p style="margin-top:2rem; font-size:.85rem; color:#667;">
+Part of the Sumsmaster estimation curriculum. Findings:
+<code>spec/better_logs.md</code> &middot; printable card:
+<code>docs/renard_cheatsheet.txt</code> &middot; simulation:
+<code>scripts/poc_log_table.py</code>
+</p>
+
+</body>
+</html>

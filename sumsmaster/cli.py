@@ -5,8 +5,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from sumsmaster.__about__ import __version__
 from sumsmaster import coverage as coverage_mod
+from sumsmaster.__about__ import __version__
 
 
 def _force_utf8_stdout() -> None:
@@ -41,6 +41,10 @@ def main() -> None:
         "tricks",
         help="list every defined trick grouped by operation",
     )
+    sub.add_parser(
+        "gui",
+        help="launch the graphical app (profiles, practice, progress)",
+    )
 
     args = parser.parse_args()
 
@@ -48,6 +52,10 @@ def main() -> None:
         print(coverage_mod.default_report())
     elif args.command == "tricks":
         print(coverage_mod.trick_summary())
+    elif args.command == "gui":
+        from sumsmaster.gui import launch
+
+        sys.exit(launch())
     else:
         parser.print_help()
 

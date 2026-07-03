@@ -36,7 +36,16 @@ pip install sumsmaster
 
 ```bash
 sumsmaster --help
+sumsmaster tricks     # list the trick taxonomy
+sumsmaster coverage   # trick-coverage report over the fact space
+sumsmaster gui        # graphical app: profiles, plans, practice, progress
 ```
+
+The GUI (also installed as `sumsmaster-gui`) is the free, self-hosted
+edition: local unauthenticated profiles stored under `~/.sumsmaster/`, plan
+selection, trick-weighted practice with mastery tracking, and pause/resume.
+It needs tkinter, which ships with CPython on Windows/macOS; on Debian/Ubuntu
+install `python3-tk`.
 
 ## Contributing
 

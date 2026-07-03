@@ -31,6 +31,9 @@ issues = "https://github.com/matthewdeanmartin/sumsmaster/issues/"
 [project.scripts]
 sumsmaster = "sumsmaster.cli:main"
 
+[project.gui-scripts]
+sumsmaster-gui = "sumsmaster.gui:launch"
+
 [build-system]
 requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"

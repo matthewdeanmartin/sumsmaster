@@ -1,0 +1,37 @@
+RENARD LOG TABLE — MENTAL MULTIPLICATION CHEAT CARD
+====================================================
+Multiply = add logs.  Divide = subtract.  Square root = halve the log.
+n-th power = multiply the log by n.  Powers of 10 ride on the integer part.
+
+R10 TABLE (memorize: ~7 digits; logs just count by 0.1)
+  log:  .0    .1    .2   .3    .4    .5    .6   .7    .8   .9   1.0
+  num:   1   1.25  1.6   2    2.5  3.15    4    5    6.3   8    10
+
+R20 HALF-STEPS (upgrade: ~12 more digits; logs count by 0.05)
+  log: .05   .15   .25  .35   .45   .55   .65  .75   .85  .95
+  num: 1.12  1.4   1.8  2.24  2.8   3.55  4.5  5.6   7.1   9
+
+DOUBLING RULE (x2 = +0.3 = 3 slots on R10, 6 on R20)
+  1 -> 2 -> 4 -> 8        1.25 -> 2.5 -> 5 -> 10       1.6 -> 3.15 -> 6.3
+  Seeds to memorize:  R10 = {1, 1.25, 1.6}   R20 adds {1.12, 1.4, 1.8}
+
+ANCHORS
+  log 2 = 0.30 (because 2^10 ~ 10^3)      0.50 -> 3.16 = sqrt(10)
+  1 R10 step = 1 decibel; "3 dB = double"
+
+WORKED EXAMPLE          487 x 2,310
+  487   = 4.87 x 10^2   4.87 -> 5     log .70  + 2
+  2,310 = 2.31 x 10^3   2.31 -> 2.24  log .35  + 3
+  add: 2.70 + 3.35 = 6.05 -> fractional .05 -> 1.12
+  ANSWER ~ 1.12 x 10^6     (true 1,124,970 — off by 0.4%)
+
+SQUARE ROOT             sqrt(5000)
+  5,000 = 5 x 10^3 -> log 3.70 -> halve -> 1.85 -> .85 -> 7.1 -> 71
+  (true 70.7)
+
+ACCURACY (typical / 9-in-10 worse than)
+  R10 snap:   ~7%  / 16%      R20 snap:        ~3.4% / 8%
+  R20 interp: ~1%  / 2.2%     2-sig-fig multiply: ~1% / 3.2%
+
+WEAK SPOT: numbers near 1 (compound interest). Use log(1+x) ~ 0.43x.
+SANITY:    always finish with a powers-of-ten check.
