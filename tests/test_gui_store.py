@@ -4,14 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from sumsmaster.gui.store import (
-    MASTERY_STREAK,
-    Profile,
-    ProfileStore,
-    SessionState,
-    TrickProgress,
-    slugify,
-)
+from sumsmaster.gui.store import MASTERY_STREAK, Profile, ProfileStore, SessionState, TrickProgress, slugify
 
 
 def make_store(tmp_path: Path) -> ProfileStore:

@@ -18,7 +18,7 @@ def launch() -> int:
     systems without a Tk build (e.g. Debian minus python3-tk).
     """
     try:
-        import tkinter  # noqa: F401
+        import tkinter  # noqa: F401# pylint: disable=unused-import
     except ImportError:
         print(
             "sumsmaster gui requires tkinter, which is missing from this "

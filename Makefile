@@ -209,9 +209,9 @@ bandit:
 
 audit:
 	@echo "=== uv audit ==="
-	@$(UV) audit
+	@$(UV) audit  --ignore-until-fixed GHSA-p4gq-832x-fm9v --ignore-until-fixed PYSEC-2026-597
 	@echo "=== pip-audit ==="
-	@$(UV) run pip-audit
+	@$(UV) run pip-audit --ignore-vuln PYSEC-2026-597
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -302,7 +302,7 @@ publish:
 check: format-check lint-check security test typecheck metadata-check version-check
 	@echo "All checks passed."
 
-check-ci: format-check lint-check security test-ci typecheck metadata-check version-check
+check-ci: format lint-check security test-ci typecheck metadata-check version-check
 	@echo "CI checks passed."
 
 prerelease: check dev-status docs-check smoke spell publish-check

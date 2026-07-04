@@ -12,4 +12,4 @@ useful fraction of the elementary-arithmetic fact space.
 from sumsmaster.tricks.model import Operation, Problem, Trick
 from sumsmaster.tricks.registry import ALL_TRICKS, tricks_for
 
-__all__ = ["Operation", "Problem", "Trick", "ALL_TRICKS", "tricks_for"]
+__all__ = ["ALL_TRICKS", "Operation", "Problem", "Trick", "tricks_for"]

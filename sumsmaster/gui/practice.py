@@ -14,16 +14,12 @@ disappearing entirely.
 from __future__ import annotations
 
 import random
+import secrets
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache, lru_cache
 from typing import Any
 
-from sumsmaster.coverage import (
-    addition_domain,
-    division_domain,
-    multiplication_domain,
-    subtraction_domain,
-)
+from sumsmaster.coverage import addition_domain, division_domain, multiplication_domain, subtraction_domain
 from sumsmaster.gui.plans import Plan
 from sumsmaster.gui.store import Profile, SessionState
 from sumsmaster.tricks import Operation, Problem, Trick
@@ -46,7 +42,7 @@ def _fact_space() -> tuple[Problem, ...]:
     )
 
 
-@lru_cache(maxsize=None)
+@cache
 def problems_for_trick(trick_name: str) -> tuple[Problem, ...]:
     """All phase-0 facts on which the named trick fires."""
     from sumsmaster.tricks.registry import ALL_TRICKS
@@ -99,10 +95,10 @@ def build_queue(
     plan: Plan,
     profile: Profile,
     length: int = DEFAULT_SESSION_LENGTH,
-    rng: random.Random | None = None,
+    rng: secrets.SystemRandom | None = None,
 ) -> list[TaggedProblem]:
     """Generate a fresh session queue for a profile's plan."""
-    rng = rng or random.Random()
+    rng = rng or secrets.SystemRandom()
     queue: list[TaggedProblem] = []
     seen: set[tuple[int, int, Operation]] = set()
     for trick in _pick_tricks(plan, profile, length, rng):

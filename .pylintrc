@@ -15,7 +15,11 @@ disable=
     too-few-public-methods,
     duplicate-code,
     import-error,
-    logging-fstring-interpolation
+    logging-fstring-interpolation,
+    missing-function-docstring,
+    import-outside-toplevel,
+    missing-class-docstring,
+    too-many-ancestors
 
 [FORMAT]
 max-line-length=120

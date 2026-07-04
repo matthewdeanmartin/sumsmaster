@@ -1,22 +1,17 @@
+---
 name: Deploy Sumsmaster Lite
-
 on:
   push:
     branches: [main]
-    paths:
-      - "sumsmaster_lite/**"
-      - ".github/workflows/deploy-lite.yml"
+    paths: [sumsmaster_lite/**, .github/workflows/deploy-lite.yml]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,7 +31,6 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: sumsmaster_lite/dist/sumsmaster-lite/browser
-
   deploy:
     environment:
       name: github-pages

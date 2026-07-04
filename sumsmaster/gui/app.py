@@ -24,13 +24,7 @@ from sumsmaster import coverage as coverage_mod
 from sumsmaster.__about__ import __version__
 from sumsmaster.gui.plans import ALL_PLANS, DEFAULT_PLAN_ID, get_plan
 from sumsmaster.gui.practice import PracticeSession
-from sumsmaster.gui.store import (
-    DEFAULT_PROFILE_NAME,
-    MASTERY_STREAK,
-    Profile,
-    ProfileStore,
-    slugify,
-)
+from sumsmaster.gui.store import DEFAULT_PROFILE_NAME, MASTERY_STREAK, Profile, ProfileStore, slugify
 from sumsmaster.tricks import ALL_TRICKS, Operation
 
 PAD = 12
@@ -113,6 +107,7 @@ class Screen(ttk.Frame):
 class ProfileScreen(Screen):
     def __init__(self, parent: ttk.Frame, app: App) -> None:
         super().__init__(parent, app)
+        self.profiles = None
         ttk.Label(self, text="Who is practicing?", font=("", 16, "bold")).pack(anchor="w", pady=(0, PAD))
 
         self.listbox = tk.Listbox(self, height=8, exportselection=False)
@@ -306,20 +301,23 @@ class DashboardScreen(Screen):
 
     def _start(self) -> None:
         profile = self.app.profile
-        assert profile is not None
-        if profile.session is not None and profile.session.queue:
-            if not messagebox.askyesno(
-                "Sumsmaster",
-                "Starting a new session discards the paused one. Continue?",
-            ):
-                return
+        if not profile:
+            raise TypeError("profile must be truthy")
+
+        session_ok = profile.session is not None and profile.session.queue
+        if session_ok and not messagebox.askyesno(
+            "Sumsmaster",
+            "Starting a new session discards the paused one. Continue?",
+        ):
+            return
         self.app.session = PracticeSession.start(profile, get_plan(profile.plan))
         self.app.save_profile()
         self.app.show("PracticeScreen")
 
     def _resume(self) -> None:
         profile = self.app.profile
-        assert profile is not None
+        if not profile:
+            raise TypeError("profile must be truthy")
         session = PracticeSession.resume(profile)
         if session is None:
             messagebox.showinfo("Sumsmaster", "That session can't be resumed.")
@@ -331,7 +329,8 @@ class DashboardScreen(Screen):
 
     def _change_plan(self) -> None:
         profile = self.app.profile
-        assert profile is not None
+        if not profile:
+            raise TypeError("profile must be truthy")
         dialog = PlanDialog(self, current=profile.plan)
         self.wait_window(dialog)
         if dialog.result and dialog.result != profile.plan:
@@ -427,7 +426,8 @@ class PracticeScreen(Screen):
             self._finish()
             return
         item = session.current
-        assert item is not None
+        if not item:
+            raise TypeError("item must be truthy")
         self.problem_label.config(text=f"{item.problem} = ?")
         self.progress_label.config(
             text=f"Problem {session.answered + 1} of {session.total}" f"   •   {session.correct} correct"
@@ -447,7 +447,8 @@ class PracticeScreen(Screen):
             self.feedback.config(text="Enter a whole number.", foreground="")
             return
         item = session.current
-        assert item is not None
+        if not item:
+            raise TypeError("item must be truthy")
         correct = session.submit(answer)
         self.app.save_profile()
         if correct:
@@ -467,7 +468,8 @@ class PracticeScreen(Screen):
 
     def _finish(self) -> None:
         session = self.app.session
-        assert session is not None
+        if not session:
+            raise TypeError("session must be truthy")
         self.problem_label.config(text="Session complete!")
         self.progress_label.config(text="")
         self.entry.state(["disabled"])

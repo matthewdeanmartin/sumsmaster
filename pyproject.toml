@@ -168,6 +168,9 @@ select = [
 ignore = [
     "E501",   # line too long (black handles this)
     "UP007",  # keep typing syntax conservative unless the package starts using 3.10-only forms
+    "RUF001", # Allow mathematical notation
+    "RUF002", # Allow mathematical notation
+    "RUF003", # Allow mathematical notation
 ]
 
 [tool.ruff.lint.per-file-ignores]

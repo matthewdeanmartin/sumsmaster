@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import sys
 
 from sumsmaster import coverage as coverage_mod
@@ -13,10 +14,8 @@ def _force_utf8_stdout() -> None:
     # Windows consoles default to cp1252 and choke on the unicode characters
     # we use in trick names and explanations. Reconfigure stdout to UTF-8
     # with replacement so output never crashes the program.
-    try:
+    with contextlib.suppress(AttributeError, ValueError):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except (AttributeError, ValueError):
-        pass
 
 
 def main() -> None:

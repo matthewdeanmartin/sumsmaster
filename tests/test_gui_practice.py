@@ -5,12 +5,7 @@ from __future__ import annotations
 import random
 
 from sumsmaster.gui.plans import get_plan
-from sumsmaster.gui.practice import (
-    PracticeSession,
-    TaggedProblem,
-    build_queue,
-    problems_for_trick,
-)
+from sumsmaster.gui.practice import PracticeSession, TaggedProblem, build_queue, problems_for_trick
 from sumsmaster.gui.store import MASTERY_STREAK, Profile
 from sumsmaster.tricks import Operation, Problem
 from sumsmaster.tricks.registry import MUL_TEN
@@ -104,7 +99,7 @@ def test_abandon_clears_state_but_keeps_progress() -> None:
 
 def test_resume_with_stale_trick_name_returns_none() -> None:
     profile = make_profile()
-    session = PracticeSession.start(profile, get_plan("everything"), length=2, rng=random.Random(5))
+    _session = PracticeSession.start(profile, get_plan("everything"), length=2, rng=random.Random(5))
     assert profile.session is not None
     profile.session.queue[0][3] = "trick that was renamed"
     assert PracticeSession.resume(profile) is None

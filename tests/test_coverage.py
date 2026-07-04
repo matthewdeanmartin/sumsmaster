@@ -2,13 +2,7 @@
 
 from __future__ import annotations
 
-from sumsmaster.coverage import (
-    addition_domain,
-    analyze,
-    division_domain,
-    multiplication_domain,
-    subtraction_domain,
-)
+from sumsmaster.coverage import addition_domain, analyze, division_domain, multiplication_domain, subtraction_domain
 
 
 def test_multiplication_grid_coverage_high() -> None:

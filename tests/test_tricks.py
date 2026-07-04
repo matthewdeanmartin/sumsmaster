@@ -27,6 +27,7 @@ def _p(a: int, b: int, op: Operation) -> Problem:
 # Targeted detector tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "problem,trick,expected",
     [
@@ -35,7 +36,6 @@ def _p(a: int, b: int, op: Operation) -> Problem:
         (_p(7, 9, Operation.MUL), MUL_TEN, False),
         (_p(7, 9, Operation.MUL), MUL_NINE_FINGER, True),
         (_p(9, 7, Operation.MUL), MUL_NINE_FINGER, True),
-
         (_p(5, 5, Operation.ADD), ADD_DOUBLES, True),
         (_p(5, 6, Operation.ADD), ADD_DOUBLES, False),
         (_p(7, 3, Operation.ADD), ADD_MAKE_TEN, True),
@@ -44,12 +44,10 @@ def _p(a: int, b: int, op: Operation) -> Problem:
         (_p(15, 10, Operation.ADD), ADD_TEN, True),
         (_p(7, 9, Operation.ADD), ADD_NEAR_TEN, True),
         (_p(11, 7, Operation.ADD), ADD_NEAR_TEN, True),
-
         (_p(20, 9, Operation.SUB), SUB_NEAR_TEN, True),
         (_p(15, 10, Operation.SUB), SUB_NEAR_TEN, False),
         (_p(13, 5, Operation.SUB), SUB_FROM_TEEN, True),
         (_p(20, 5, Operation.SUB), SUB_FROM_TEEN, False),
-
         (_p(80, 10, Operation.DIV), DIV_BY_TEN, True),
         (_p(56, 7, Operation.DIV), DIV_INVERSE_OF_MUL, True),
         # Wrong op never matches.

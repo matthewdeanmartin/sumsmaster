@@ -14,10 +14,10 @@ from __future__ import annotations
 import json
 import os
 import re
-from typing import Any
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 PROFILE_SCHEMA_VERSION = 1
 DEFAULT_PROFILE_NAME = "default"

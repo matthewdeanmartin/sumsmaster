@@ -14,15 +14,15 @@ matching division facts.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
-from typing import Iterable, Iterator
 
 from sumsmaster.tricks import ALL_TRICKS, Operation, Problem, Trick, tricks_for
-
 
 # ---------------------------------------------------------------------------
 # Domains
 # ---------------------------------------------------------------------------
+
 
 def addition_domain(lo: int = 0, hi: int = 12) -> Iterator[Problem]:
     for a in range(lo, hi + 1):
@@ -54,6 +54,7 @@ def division_domain(lo: int = 1, hi: int = 12) -> Iterator[Problem]:
 # Report
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class CoverageReport:
     domain_name: str
@@ -70,8 +71,7 @@ class CoverageReport:
     def format(self, show_uncovered: int = 10) -> str:
         lines = [
             f"=== {self.domain_name} ===",
-            f"facts: {self.total_facts}   covered: {self.covered_facts}   "
-            f"coverage: {self.coverage_pct:.1f}%",
+            f"facts: {self.total_facts}   covered: {self.covered_facts}   " f"coverage: {self.coverage_pct:.1f}%",
             "",
             "tricks-per-fact distribution:",
         ]

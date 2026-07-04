@@ -108,13 +108,7 @@ ADD_BRIDGE_TEN = Trick(
     applies_to=ADD,
     # Useful when both operands are single-digit, sum > 10, and neither is
     # already a 'trivial' add (0/1/2/10 family handled above).
-    detect=lambda p: (
-        1 <= p.a <= 9
-        and 1 <= p.b <= 9
-        and p.a + p.b > 10
-        and p.a not in (1, 2)
-        and p.b not in (1, 2)
-    ),
+    detect=lambda p: (1 <= p.a <= 9 and 1 <= p.b <= 9 and p.a + p.b > 10 and p.a not in (1, 2) and p.b not in (1, 2)),
 )
 
 ADD_TWELVE = Trick(
@@ -327,10 +321,7 @@ MUL_DISTRIBUTIVE_SPLIT = Trick(
     # Targets the small-factor pairs that escape every other trick (notably
     # 3×7 / 7×3 / 3×8 / 6×7 etc.). Fires when both factors are in 3..9
     # and neither is one of the easy specials.
-    detect=lambda p: (
-        3 <= p.a <= 9 and 3 <= p.b <= 9
-        and p.a not in (5,) and p.b not in (5,)
-    ),
+    detect=lambda p: (3 <= p.a <= 9 and 3 <= p.b <= 9 and p.a not in (5,) and p.b not in (5,)),
 )
 
 MUL_NEAR_TEN = Trick(
@@ -397,20 +388,52 @@ DIV_INVERSE_OF_MUL = Trick(
 
 ALL_TRICKS: tuple[Trick, ...] = (
     # Addition
-    ADD_ZERO, ADD_ONE, ADD_TWO, ADD_TEN, ADD_NEAR_TEN,
-    ADD_DOUBLES, ADD_NEAR_DOUBLES, ADD_MAKE_TEN, ADD_BRIDGE_TEN,
-    ADD_TWELVE, ADD_PARTITION_SMALL, ADD_NEAR_HUNDRED,
+    ADD_ZERO,
+    ADD_ONE,
+    ADD_TWO,
+    ADD_TEN,
+    ADD_NEAR_TEN,
+    ADD_DOUBLES,
+    ADD_NEAR_DOUBLES,
+    ADD_MAKE_TEN,
+    ADD_BRIDGE_TEN,
+    ADD_TWELVE,
+    ADD_PARTITION_SMALL,
+    ADD_NEAR_HUNDRED,
     # Subtraction
-    SUB_ZERO, SUB_SELF, SUB_ONE, SUB_TEN, SUB_NEAR_TEN,
-    SUB_NEAR_HUNDRED, SUB_COUNT_UP_SMALL_GAP, SUB_INVERSE_OF_DOUBLE,
-    SUB_INVERSE_OF_ADDITION, SUB_FROM_TEEN, SUB_FROM_TWENTY,
+    SUB_ZERO,
+    SUB_SELF,
+    SUB_ONE,
+    SUB_TEN,
+    SUB_NEAR_TEN,
+    SUB_NEAR_HUNDRED,
+    SUB_COUNT_UP_SMALL_GAP,
+    SUB_INVERSE_OF_DOUBLE,
+    SUB_INVERSE_OF_ADDITION,
+    SUB_FROM_TEEN,
+    SUB_FROM_TWENTY,
     # Multiplication
-    MUL_ZERO, MUL_ONE, MUL_TWO, MUL_FIVE, MUL_TEN, MUL_POWER_OF_TEN,
-    MUL_ELEVEN_SMALL, MUL_ELEVEN_TEEN, MUL_NINE_FINGER, MUL_SQUARE,
-    MUL_DOUBLE_AND_HALF, MUL_FOUR_AS_DOUBLE_DOUBLE, MUL_DISTRIBUTIVE_SPLIT,
+    MUL_ZERO,
+    MUL_ONE,
+    MUL_TWO,
+    MUL_FIVE,
+    MUL_TEN,
+    MUL_POWER_OF_TEN,
+    MUL_ELEVEN_SMALL,
+    MUL_ELEVEN_TEEN,
+    MUL_NINE_FINGER,
+    MUL_SQUARE,
+    MUL_DOUBLE_AND_HALF,
+    MUL_FOUR_AS_DOUBLE_DOUBLE,
+    MUL_DISTRIBUTIVE_SPLIT,
     MUL_NEAR_TEN,
     # Division
-    DIV_BY_ONE, DIV_SELF, DIV_BY_TWO, DIV_BY_FIVE, DIV_BY_TEN, DIV_INVERSE_OF_MUL,
+    DIV_BY_ONE,
+    DIV_SELF,
+    DIV_BY_TWO,
+    DIV_BY_FIVE,
+    DIV_BY_TEN,
+    DIV_INVERSE_OF_MUL,
 )
 
 
