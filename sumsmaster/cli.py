@@ -15,7 +15,7 @@ def _force_utf8_stdout() -> None:
     # we use in trick names and explanations. Reconfigure stdout to UTF-8
     # with replacement so output never crashes the program.
     with contextlib.suppress(AttributeError, ValueError):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
 
 
 def main() -> None:

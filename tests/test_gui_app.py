@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import tkinter
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
+
+from sumsmaster.gui.app import App
+from sumsmaster.gui.store import ProfileStore
 
 
 def _tk_available() -> bool:
@@ -21,12 +26,8 @@ def _tk_available() -> bool:
 pytestmark = pytest.mark.skipif(not _tk_available(), reason="no usable Tk display (headless CI)")
 
 
-def _build_app(root: Path):
+def _build_app(root: Path) -> App:
     """Construct the App, skipping if Tk can't (re)initialize mid-suite."""
-    import tkinter
-
-    from sumsmaster.gui.app import App
-    from sumsmaster.gui.store import ProfileStore
 
     try:
         return App(store=ProfileStore(root=root))
@@ -80,8 +81,8 @@ def test_profile_flow_to_dashboard_and_practice(tmp_path: Path) -> None:
         practice = app.screens["PracticeScreen"]
         item = app.session.current
         assert item is not None
-        practice.answer_var.set(str(item.problem.answer))
-        practice._submit()
+        cast(Any, practice.answer_var).set(str(item.problem.answer))  # type: ignore[attr-defined]
+        cast(Any, practice)._submit()
         assert app.session.answered == 1
 
         # The paused session must be resumable from disk.

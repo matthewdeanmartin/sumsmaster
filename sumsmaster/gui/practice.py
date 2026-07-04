@@ -140,7 +140,7 @@ class PracticeSession:
         profile: Profile,
         plan: Plan,
         length: int = DEFAULT_SESSION_LENGTH,
-        rng: random.Random | None = None,
+        rng: secrets.SystemRandom | None = None,
     ) -> PracticeSession:
         queue = build_queue(plan, profile, length, rng)
         session = cls(profile, queue, total=len(queue))

@@ -107,7 +107,7 @@ class Screen(ttk.Frame):
 class ProfileScreen(Screen):
     def __init__(self, parent: ttk.Frame, app: App) -> None:
         super().__init__(parent, app)
-        self.profiles = None
+        self.profiles: list[Profile] = []
         ttk.Label(self, text="Who is practicing?", font=("", 16, "bold")).pack(anchor="w", pady=(0, PAD))
 
         self.listbox = tk.Listbox(self, height=8, exportselection=False)

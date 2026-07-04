@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from sumsmaster.tricks import Operation, Problem, tricks_for
@@ -54,7 +56,7 @@ def _p(a: int, b: int, op: Operation) -> Problem:
         (_p(7, 10, Operation.MUL), DIV_BY_TEN, False),
     ],
 )
-def test_detector(problem: Problem, trick, expected: bool) -> None:
+def test_detector(problem: Problem, trick: Any, expected: bool) -> None:
     assert trick.matches(problem) is expected
 
 
