@@ -1,0 +1,18 @@
+
+> sumsmaster-lite@0.0.0 start
+> ng serve --host 127.0.0.1 --port 4200
+
+> Building...
+√ Building...
+Initial chunk files | Names         |  Raw size
+main.js             | main          | 113.04 kB | 
+styles.css          | styles        | 745 bytes | 
+
+                    | Initial total | 113.78 kB
+
+Application bundle generation complete. [1.902 seconds] - 2026-07-04T15:13:01.269Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4200[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m

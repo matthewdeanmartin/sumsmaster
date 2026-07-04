@@ -47,6 +47,12 @@ selection, trick-weighted practice with mastery tracking, and pause/resume.
 It needs tkinter, which ships with CPython on Windows/macOS; on Debian/Ubuntu
 install `python3-tk`.
 
+## Sumsmaster Lite
+
+[`sumsmaster_lite/`](sumsmaster_lite/) contains the static Angular edition for GitHub Pages. It provides the same
+plans, trick-weighted practice, mastery tracking, session resume, trick library, and coverage analysis for one learner,
+persisted entirely in browser `localStorage`.
+
 ## Contributing
 
 See [CONTRIBUTING.md](docs/extending/CONTRIBUTING.md).

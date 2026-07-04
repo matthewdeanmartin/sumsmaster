@@ -1,0 +1,188 @@
+<header class="site-header">
+  <button class="brand" type="button" (click)="profile && navigate('dashboard')" aria-label="Sumsmaster Lite home">
+    <span class="brand-mark">Σ</span>
+    <span>Sumsmaster <em>Lite</em></span>
+  </button>
+  @if (profile) {
+    <nav aria-label="Main navigation">
+      <button type="button" [class.active]="screen === 'dashboard'" (click)="navigate('dashboard')">Progress</button>
+      <button type="button" [class.active]="screen === 'tricks'" (click)="navigate('tricks')">Trick library</button>
+      <button type="button" [class.active]="screen === 'coverage'" (click)="navigate('coverage')">Coverage</button>
+      <button type="button" class="icon-button" [class.active]="screen === 'settings'" (click)="navigate('settings')" aria-label="Learner settings">⚙</button>
+    </nav>
+  }
+</header>
+
+<main>
+  @if (!profile) {
+    <section class="welcome">
+      <div class="welcome-copy">
+        <p class="eyebrow">Mental math, made visible</p>
+        <h1>Build number sense,<br><span>one smart trick at a time.</span></h1>
+        <p class="lede">Short, focused practice sessions teach the patterns behind arithmetic—not just the answers.</p>
+        <div class="privacy-note"><span>✓</span> No account. No ads. Your progress stays on this device.</div>
+      </div>
+      <form class="setup-card" (ngSubmit)="createProfile()">
+        <p class="step">LET'S GET STARTED</p>
+        <h2>Who’s practicing?</h2>
+        <label for="learner-name">Learner name</label>
+        <input id="learner-name" name="learnerName" [(ngModel)]="setupName" maxlength="40" autocomplete="name" placeholder="e.g. Maya" required autofocus>
+        <label for="starter-plan">Choose a practice plan</label>
+        <select id="starter-plan" name="starterPlan" [(ngModel)]="setupPlanId">
+          @for (item of plans; track item.id) { <option [value]="item.id">{{ item.name }}</option> }
+        </select>
+        <p class="plan-description">{{ plan.description }}</p>
+        <button class="primary full" type="submit" [disabled]="!setupName.trim()">Start learning <span>→</span></button>
+      </form>
+    </section>
+  } @else if (screen === 'dashboard') {
+    <section class="page dashboard">
+      <div class="hero-row">
+        <div>
+          <p class="eyebrow">{{ plan.name }}</p>
+          <h1>Good to see you, {{ profile.name }}.</h1>
+          <p>Small patterns add up. Ready for another round?</p>
+        </div>
+        @if (profile.session?.queue?.length) {
+          <button class="primary" type="button" (click)="resumePractice()">Resume session <span>→</span></button>
+        } @else {
+          <button class="primary" type="button" (click)="beginPractice()">Start 10 questions <span>→</span></button>
+        }
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card mastery-card">
+          <span class="stat-icon coral">◇</span>
+          <div><strong>{{ masteredCount }} <small>/ {{ planTricks.length }}</small></strong><span>Tricks mastered</span></div>
+          <div class="mini-progress"><span [style.width.%]="masteryPercentage"></span></div>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon mint">✓</span>
+          <div><strong>{{ totalCorrect }} <small>/ {{ totalAttempts }}</small></strong><span>Answers correct</span></div>
+        </article>
+        <article class="stat-card">
+          <span class="stat-icon yellow">⚡</span>
+          <div><strong>{{ masteryStreak }}</strong><span>Streak to master</span></div>
+        </article>
+      </div>
+
+      <div class="section-heading">
+        <div><h2>Your trick progress</h2><p>Get five right in a row to master a trick.</p></div>
+        <button class="text-button" type="button" (click)="navigate('tricks')">Browse all tricks →</button>
+      </div>
+      <div class="progress-table" role="table" aria-label="Trick progress">
+        <div class="table-row table-head" role="row"><span>TRICK</span><span>ATTEMPTS</span><span>ACCURACY</span><span>STREAK</span><span>STATUS</span></div>
+        @for (item of planTricks; track item.name) {
+          <div class="table-row" role="row">
+            <span class="trick-name"><i [class.mastered-dot]="isMastered(item)">{{ symbol(item.operation) }}</i>{{ item.name }}</span>
+            <span data-label="Attempts">{{ progressFor(item)?.attempts ?? 0 }}</span>
+            <span data-label="Accuracy">{{ accuracyFor(item) }}</span>
+            <span data-label="Streak"><b class="streak">{{ progressFor(item)?.streak ?? 0 }}</b></span>
+            <span data-label="Status">@if (isMastered(item)) { <b class="mastered-pill">Mastered</b> } @else { <span class="learning-pill">Learning</span> }</span>
+          </div>
+        }
+      </div>
+    </section>
+  } @else if (screen === 'practice') {
+    <section class="practice-page">
+      <div class="practice-top">
+        <button class="back-button" type="button" (click)="pausePractice()">← Pause</button>
+        @if (profile.session) {
+          <div class="session-progress" aria-label="Session progress">
+            <span>Question {{ questionNumber }} of {{ profile.session.total }}</span>
+            <div><i [style.width.%]="100 * profile.session.answered / profile.session.total"></i></div>
+          </div>
+        }
+        <button class="quiet-danger" type="button" (click)="abandonPractice()">End session</button>
+      </div>
+
+      @if (completedScore) {
+        <article class="practice-card complete-card">
+          <div class="celebration">✦</div>
+          <p class="eyebrow">SESSION COMPLETE</p>
+          <h1>Nicely done, {{ profile.name }}!</h1>
+          <strong>{{ completedScore.correct }} / {{ completedScore.total }}</strong>
+          <p>Every answer helps your practice plan get a little smarter.</p>
+          <button class="primary" type="button" (click)="navigate('dashboard')">See my progress →</button>
+        </article>
+      } @else if (feedback) {
+        <article class="practice-card feedback-card" [class.correct]="feedback.correct" [class.incorrect]="!feedback.correct">
+          <div class="result-icon">{{ feedback.correct ? '✓' : '↻' }}</div>
+          <p class="eyebrow">{{ feedback.correct ? 'THAT’S IT!' : 'GOOD TRY' }}</p>
+          <h1>{{ feedback.correct ? 'Correct.' : 'The answer is ' + feedback.expected + '.' }}</h1>
+          <div class="strategy-box"><span>THE TRICK</span><h2>{{ feedback.trick.name }}</h2><p>{{ feedback.trick.explanation }}</p></div>
+          <button class="primary" type="button" (click)="nextQuestion()">Next question →</button>
+        </article>
+      } @else if (currentQuestion) {
+        <form class="practice-card question-card" (ngSubmit)="checkAnswer()">
+          <p class="eyebrow">TAKE YOUR TIME</p>
+          <div class="problem" aria-label="Arithmetic question">{{ currentQuestion.a }} <span>{{ symbol(currentQuestion.op) }}</span> {{ currentQuestion.b }} <span>=</span> ?</div>
+          <label for="answer">Your answer</label>
+          <input id="answer" name="answer" [(ngModel)]="answerInput" inputmode="numeric" pattern="-?[0-9]+" autocomplete="off" autofocus>
+          @if (answerError) { <p class="form-error">{{ answerError }}</p> }
+          <button class="primary" type="submit">Check answer</button>
+        </form>
+      }
+    </section>
+  } @else if (screen === 'tricks') {
+    <section class="page narrow-page">
+      <p class="eyebrow">THE TOOLBOX</p>
+      <h1>Trick library</h1>
+      <p class="page-intro">Mental math gets easier when you can spot the structure. Here are all {{ operationGroups.length ? 42 : 0 }} strategies in Sumsmaster.</p>
+      @for (group of operationGroups; track group.operation) {
+        <section class="trick-group">
+          <div class="group-title"><span>{{ symbol(group.operation) }}</span><div><h2>{{ group.label }}</h2><p>{{ group.tricks.length }} tricks</p></div></div>
+          <div class="trick-grid">
+            @for (item of group.tricks; track item.name) {
+              <article class="trick-card" [class.mastered]="isMastered(item)">
+                @if (isMastered(item)) { <span class="mastered-pill">✓ Mastered</span> }
+                <h3>{{ item.name }}</h3><p>{{ item.explanation }}</p>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    </section>
+  } @else if (screen === 'coverage') {
+    <section class="page narrow-page">
+      <p class="eyebrow">UNDER THE HOOD</p>
+      <h1>Fact coverage</h1>
+      <p class="page-intro">How much of the elementary fact space has a useful mental shortcut? This live report uses the same domains and detectors as practice.</p>
+      @if (coverage) {
+        <article class="overall-coverage">
+          <div><span>OVERALL COVERAGE</span><strong>{{ coverageTotal().percentage | number:'1.1-1' }}%</strong><p>{{ coverageTotal().covered }} of {{ coverageTotal().total }} facts have at least one trick.</p></div>
+          <div class="coverage-ring" [style.--coverage]="coverageTotal().percentage + '%'">{{ coverageTotal().percentage | number:'1.0-0' }}%</div>
+        </article>
+        <div class="coverage-grid">
+          @for (report of coverage; track report.operation) {
+            <article class="coverage-card">
+              <div class="coverage-card-head"><span>{{ symbol(report.operation) }}</span><div><h2>{{ report.label }}</h2><p>{{ report.covered }} / {{ report.total }} facts</p></div><strong>{{ report.percentage | number:'1.1-1' }}%</strong></div>
+              <div class="coverage-bar"><i [style.width.%]="report.percentage"></i></div>
+              <details><summary>Trick reach</summary>
+                @for (hit of report.hits; track hit.trick.name) { <div class="hit-row"><span>{{ hit.trick.name }}</span><b>{{ hit.count }}</b></div> }
+              </details>
+              @if (report.uncovered.length) { <details><summary>{{ report.uncovered.length }} uncovered facts</summary><p class="fact-list">{{ report.uncovered.slice(0, 20).join(' · ') }}@if (report.uncovered.length > 20) { … }</p></details> }
+            </article>
+          }
+        </div>
+      }
+    </section>
+  } @else if (screen === 'settings') {
+    <section class="page settings-page">
+      <p class="eyebrow">LOCAL LEARNER</p><h1>Settings</h1>
+      <form class="settings-card" (ngSubmit)="saveSettings()">
+        <label for="edit-name">Learner name</label>
+        <input id="edit-name" name="editName" [(ngModel)]="editName" maxlength="40" required>
+        <label for="edit-plan">Practice plan</label>
+        <select id="edit-plan" name="editPlan" [(ngModel)]="editPlanId">
+          @for (item of plans; track item.id) { <option [value]="item.id">{{ item.name }}</option> }
+        </select>
+        <p class="plan-description">{{ plan.description }}</p>
+        <button class="primary" type="submit">Save changes</button>
+      </form>
+      <div class="danger-zone"><div><h2>Reset this learner</h2><p>Erase the single local profile and all progress stored by this browser.</p></div><button type="button" (click)="resetLearner()">Erase local data</button></div>
+    </section>
+  }
+</main>
+
+<footer><span>Sumsmaster Lite</span><span>Progress is saved locally in your browser.</span></footer>
