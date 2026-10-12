@@ -430,7 +430,7 @@ class PracticeScreen(Screen):
             raise TypeError("item must be truthy")
         self.problem_label.config(text=f"{item.problem} = ?")
         self.progress_label.config(
-            text=f"Problem {session.answered + 1} of {session.total}" f"   •   {session.correct} correct"
+            text=f"Problem {session.answered + 1} of {session.total}   •   {session.correct} correct"
         )
         self.answer_var.set("")
         self.entry.state(["!disabled"])

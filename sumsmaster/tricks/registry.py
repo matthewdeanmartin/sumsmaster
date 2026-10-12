@@ -108,7 +108,7 @@ ADD_BRIDGE_TEN = Trick(
     applies_to=ADD,
     # Useful when both operands are single-digit, sum > 10, and neither is
     # already a 'trivial' add (0/1/2/10 family handled above).
-    detect=lambda p: (1 <= p.a <= 9 and 1 <= p.b <= 9 and p.a + p.b > 10 and p.a not in (1, 2) and p.b not in (1, 2)),
+    detect=lambda p: 1 <= p.a <= 9 and 1 <= p.b <= 9 and p.a + p.b > 10 and p.a not in (1, 2) and p.b not in (1, 2),
 )
 
 ADD_TWELVE = Trick(
@@ -321,7 +321,7 @@ MUL_DISTRIBUTIVE_SPLIT = Trick(
     # Targets the small-factor pairs that escape every other trick (notably
     # 3×7 / 7×3 / 3×8 / 6×7 etc.). Fires when both factors are in 3..9
     # and neither is one of the easy specials.
-    detect=lambda p: (3 <= p.a <= 9 and 3 <= p.b <= 9 and p.a not in (5,) and p.b not in (5,)),
+    detect=lambda p: 3 <= p.a <= 9 and 3 <= p.b <= 9 and p.a not in (5,) and p.b not in (5,),
 )
 
 MUL_NEAR_TEN = Trick(

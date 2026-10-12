@@ -166,7 +166,7 @@ select = [
     "RUF", # ruff-specific
     "W",   # pycodestyle warnings
 ]
-ignore = [
+ignore = ["RUF100", 
     "E501",   # line too long (black handles this)
     "UP007",  # keep typing syntax conservative unless the package starts using 3.10-only forms
     "RUF001", # Allow mathematical notation

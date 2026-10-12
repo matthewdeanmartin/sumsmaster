@@ -71,7 +71,7 @@ class CoverageReport:
     def format(self, show_uncovered: int = 10) -> str:
         lines = [
             f"=== {self.domain_name} ===",
-            f"facts: {self.total_facts}   covered: {self.covered_facts}   " f"coverage: {self.coverage_pct:.1f}%",
+            f"facts: {self.total_facts}   covered: {self.covered_facts}   coverage: {self.coverage_pct:.1f}%",
             "",
             "tricks-per-fact distribution:",
         ]

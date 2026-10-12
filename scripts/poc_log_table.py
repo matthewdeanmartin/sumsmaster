@@ -47,6 +47,7 @@ Run:  python scripts/poc_log_table.py   (stdlib only)
 
 from __future__ import annotations
 
+import itertools
 import math
 import random
 import statistics
@@ -58,7 +59,7 @@ from dataclasses import dataclass, field
 
 
 def _is_uniform(seq: list[float], tol: float = 1e-9) -> bool:
-    diffs = [b - a for a, b in zip(seq, seq[1:])]
+    diffs = [b - a for a, b in itertools.pairwise(seq)]
     return all(abs(d - diffs[0]) <= tol for d in diffs)
 
 
@@ -85,17 +86,14 @@ class LogTable:
             n = len(self.points) - 1
             self.values = [round(k / n, self.decimals) for k in range(n + 1)]
         else:
-            self.values = [round(math.log10(p), self.decimals)
-                           for p in self.points]
+            self.values = [round(math.log10(p), self.decimals) for p in self.points]
         # rounding a monotonic function stays (weakly) monotonic
-        assert all(v1 >= v0 for v0, v1 in zip(self.values, self.values[1:]))
+        assert all(v1 >= v0 for v0, v1 in zip(self.values, self.values[1:], strict=False))
 
     @property
     def memorized_digits(self) -> int:
-        value_cost = (0 if _is_uniform(self.values)
-                      else self.decimals * (len(self.points) - 2))
-        grid_cost = (0 if _is_uniform(self.points)
-                     else sum(_frac_digits(p) for p in self.points))
+        value_cost = 0 if _is_uniform(self.values) else self.decimals * (len(self.points) - 2)
+        grid_cost = 0 if _is_uniform(self.points) else sum(_frac_digits(p) for p in self.points)
         return value_cost + grid_cost
 
     # -- interpolating lookups ------------------------------------------------
@@ -118,10 +116,10 @@ class LogTable:
     # -- nearest-entry lookups (no interpolation) -----------------------------
 
     def log_nearest(self, m: float) -> float:
-        return min(zip(self.points, self.values), key=lambda pv: abs(pv[0] - m))[1]
+        return min(zip(self.points, self.values, strict=False), key=lambda pv: abs(pv[0] - m))[1]
 
     def antilog_nearest(self, f: float) -> float:
-        return min(zip(self.points, self.values), key=lambda pv: abs(pv[1] - f))[0]
+        return min(zip(self.points, self.values, strict=False), key=lambda pv: abs(pv[1] - f))[0]
 
     @staticmethod
     def _bracket(xs: list[float], x: float) -> int:
@@ -154,8 +152,7 @@ def log_multiply(a: float, b: float, table: LogTable, mode: str) -> float:
         total = table.log_nearest(ma) + table.log_nearest(mb)
     k = math.floor(total + 1e-12)
     frac = total - k
-    mant = (table.antilog_interp(frac) if mode == "interp"
-            else table.antilog_nearest(frac))
+    mant = table.antilog_interp(frac) if mode == "interp" else table.antilog_nearest(frac)
     return mant * 10.0 ** (ea + eb + k)
 
 
@@ -193,8 +190,7 @@ class Stats:
     within_10: float
 
     @classmethod
-    def from_errors(cls, label: str, cost: str, cost_digits: int,
-                    errs: list[float]) -> "Stats":
+    def from_errors(cls, label: str, cost: str, cost_digits: int, errs: list[float]) -> Stats:
         errs = sorted(errs)
         n = len(errs)
         return cls(
@@ -210,9 +206,11 @@ class Stats:
         )
 
     def row(self) -> str:
-        return (f"{self.label:42} {self.cost:28} {self.median:7.2%} "
-                f"{self.p90:7.2%} {self.worst:7.2%} {self.within_1:5.0%} "
-                f"{self.within_5:5.0%} {self.within_10:5.0%}")
+        return (
+            f"{self.label:42} {self.cost:28} {self.median:7.2%} "
+            f"{self.p90:7.2%} {self.worst:7.2%} {self.within_1:5.0%} "
+            f"{self.within_5:5.0%} {self.within_10:5.0%}"
+        )
 
 
 def sample_problems(n: int, rng: random.Random) -> list[tuple[float, float]]:
@@ -231,8 +229,7 @@ def frange(start: float, stop: float, step: float) -> list[float]:
 
 
 R10 = [1.0, 1.25, 1.6, 2.0, 2.5, 3.15, 4.0, 5.0, 6.3, 8.0, 10.0]
-R20 = [1.0, 1.12, 1.25, 1.4, 1.6, 1.8, 2.0, 2.24, 2.5, 2.8, 3.15, 3.55,
-       4.0, 4.5, 5.0, 5.6, 6.3, 7.1, 8.0, 9.0, 10.0]
+R20 = [1.0, 1.12, 1.25, 1.4, 1.6, 1.8, 2.0, 2.24, 2.5, 2.8, 3.15, 3.55, 4.0, 4.5, 5.0, 5.6, 6.3, 7.1, 8.0, 9.0, 10.0]
 
 
 def build_tables() -> list[LogTable]:
@@ -241,16 +238,14 @@ def build_tables() -> list[LogTable]:
         ("integers 1-10", integers, 1),
         ("integers 1-10", integers, 2),
         ("integers 1-10", integers, 3),
-        ("ints + 1.5/2.5/3.5", integers + [1.5, 2.5, 3.5], 2),
+        ("ints + 1.5/2.5/3.5", [*integers, 1.5, 2.5, 3.5], 2),
         ("half steps", frange(1.0, 10.0, 0.5), 2),
         ("quarter steps", frange(1.0, 10.0, 0.25), 2),
         ("quarter steps", frange(1.0, 10.0, 0.25), 3),
     ]
     tables = [LogTable(f"{name}, {k} dec", pts, k) for name, pts, k in configs]
-    tables.append(LogTable("R10 preferred numbers, 1 dec", R10, 1,
-                           pattern_values=True))
-    tables.append(LogTable("R20 preferred numbers, 2 dec", R20, 2,
-                           pattern_values=True))
+    tables.append(LogTable("R10 preferred numbers, 1 dec", R10, 1, pattern_values=True))
+    tables.append(LogTable("R20 preferred numbers, 2 dec", R20, 2, pattern_values=True))
     return tables
 
 
@@ -262,28 +257,31 @@ def run() -> None:
     log_stats: list[Stats] = []
     for mode in ("interp", "nearest"):
         for table in build_tables():
-            errs = [abs(log_multiply(a, b, table, mode) / t - 1.0)
-                    for (a, b), t in zip(problems, truths)]
-            log_stats.append(Stats.from_errors(
-                f"log/{mode}: {table.name}",
-                f"{table.memorized_digits} memorized",
-                table.memorized_digits,
-                errs,
-            ))
+            errs = [abs(log_multiply(a, b, table, mode) / t - 1.0) for (a, b), t in zip(problems, truths, strict=False)]
+            log_stats.append(
+                Stats.from_errors(
+                    f"log/{mode}: {table.name}",
+                    f"{table.memorized_digits} memorized",
+                    table.memorized_digits,
+                    errs,
+                )
+            )
 
     direct_stats: list[Stats] = []
     for sig in (1, 2, 3):
-        errs = [abs(direct_multiply(a, b, sig) / t - 1.0)
-                for (a, b), t in zip(problems, truths)]
-        direct_stats.append(Stats.from_errors(
-            f"direct: round to {sig} sig fig{'s' if sig > 1 else ''}",
-            f"0 memorized, {sig}x{sig} multiply",
-            0,
-            errs,
-        ))
+        errs = [abs(direct_multiply(a, b, sig) / t - 1.0) for (a, b), t in zip(problems, truths, strict=False)]
+        direct_stats.append(
+            Stats.from_errors(
+                f"direct: round to {sig} sig fig{'s' if sig > 1 else ''}",
+                f"0 memorized, {sig}x{sig} multiply",
+                0,
+                errs,
+            )
+        )
 
-    header = (f"{'method':42} {'memory cost':28} {'median':>8} {'p90':>8} "
-              f"{'worst':>8} {'<=1%':>6} {'<=5%':>6} {'<=10%':>6}")
+    header = (
+        f"{'method':42} {'memory cost':28} {'median':>8} {'p90':>8} {'worst':>8} {'<=1%':>6} {'<=5%':>6} {'<=10%':>6}"
+    )
     sep = "-" * len(header)
 
     print("Mental multiplication accuracy, 20,000 random problems")
@@ -296,12 +294,11 @@ def run() -> None:
     for s in direct_stats:
         print(s.row())
 
-    print("\nPareto-optimal log configs, either mode "
-          "(no cheaper config has lower p90 error):")
+    print("\nPareto-optimal log configs, either mode (no cheaper config has lower p90 error):")
     frontier = [
-        s for s in log_stats
-        if not any(o.cost_digits <= s.cost_digits and o.p90 < s.p90
-                   and o is not s for o in log_stats)
+        s
+        for s in log_stats
+        if not any(o.cost_digits <= s.cost_digits and o.p90 < s.p90 and o is not s for o in log_stats)
     ]
     for s in sorted(frontier, key=lambda s: s.cost_digits):
         print(f"  {s.cost_digits:3d} digits -> p90 {s.p90:6.2%}  ({s.label})")
